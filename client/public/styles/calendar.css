@@ -1,0 +1,128 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f8f8;
+}
+
+.container {
+    max-width: 80%;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+}
+
+.calendar-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.calendar {
+    flex: 0 0 60%;
+    border: 2px solid #ccc;
+    border-radius: 1rem;
+    margin-right: 1rem;
+    padding: 1rem;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.month-name {
+    flex: 1;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.calendar-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.day-row {
+    font-weight: bold;
+    border-bottom: 1px solid #ccc;
+    padding: 0.5rem 0;
+}
+
+.day-cell {
+    flex: 1;
+    text-align: center;
+}
+
+.calendar-cell {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem 0;
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    transition: background-color 0.3s ease;
+}
+
+.calendar-cell:last-child {
+    border-right: none;
+}
+
+.predetermined-date {
+    background-color: lightgreen;
+    cursor: pointer;
+}
+
+.predetermined-date:hover {
+    background-color: green;
+    color: white;
+}
+
+.disabled-date {
+    background-color: #f0f0f0;
+    color: #ccc;
+    cursor: default;
+}
+
+.disabled-date:hover {
+    background-color: #dcdcdc;
+}
+
+.time-slots {
+    flex: 0 0 35%;
+    border: 2px solid #ccc;
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+.time-slot {
+    margin-bottom: 0.5rem;
+}
+
+.submit-button {
+    padding: 1rem 2rem;
+    background-color: dodgerblue;
+    color: #fff;
+    border: none;
+    border-radius: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+#userName {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 2px solid #ccc;
+    border-radius: 1rem;
+    font-size: 1rem;
+}
