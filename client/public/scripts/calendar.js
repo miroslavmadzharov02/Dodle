@@ -10,36 +10,22 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedSlots = [];
     let selectedMonth;
     let selectedYear;
-
-    // Predetermined dates
-    const predeterminedStartDate = new Date(2024, 4, 1); // May 1, 2024
-    const predeterminedEndDate = new Date(2024, 4, 20);  // May 20, 2024
-    const predeterminedDates = getDatesInRange(predeterminedStartDate, predeterminedEndDate);
+    let eventId;  // Assuming eventId is set from the URL or some other logic
 
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-    function getDatesInRange(startDate, endDate) {
-        const dates = [];
-        const currentDate = new Date(startDate);
-        while (currentDate <= endDate) {
-            dates.push(new Date(currentDate));
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-        return dates;
-    }
-
-    function generateCalendar(year, month) {
+    async function generateCalendar(year, month) {
         calendarGrid.innerHTML = '';
         currentMonthElement.textContent = `${monthNames[month]} ${year}`;
         selectedMonth = month;
         selectedYear = year;
-    
+
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
         const daysInMonth = lastDay.getDate();
         const startingDay = (firstDay.getDay() + 6) % 7;
-    
+
         const dayRow = document.createElement('div');
         dayRow.classList.add('calendar-row', 'day-row');
         dayNames.forEach(day => {
@@ -49,34 +35,27 @@ document.addEventListener('DOMContentLoaded', function() {
             dayRow.appendChild(dayCell);
         });
         calendarGrid.appendChild(dayRow);
-    
+
         let currentRow = document.createElement('div');
         currentRow.classList.add('calendar-row');
-    
-        // Add empty cells for days before the first day of the month
+
         for (let i = 0; i < startingDay; i++) {
             const emptyCell = document.createElement('div');
             emptyCell.classList.add('calendar-cell', 'disabled-date', 'empty-cell');
             currentRow.appendChild(emptyCell);
         }
-    
+
         for (let i = 1; i <= daysInMonth; i++) {
             const date = new Date(year, month, i);
             const dayOfWeek = (date.getDay() + 6) % 7;
             const cell = document.createElement('div');
             cell.textContent = i;
             cell.classList.add('calendar-cell');
-    
-            if (predeterminedDates.some(d => d.getTime() === date.getTime())) {
-                cell.classList.add('predetermined-date');
-                cell.addEventListener('click', () => showTimeSlots(i));
-            } else {
-                cell.classList.add('disabled-date');
-            }
+
+            cell.addEventListener('click', () => showTimeSlots(date.toISOString().split('T')[0]));
             currentRow.appendChild(cell);
-    
+
             if (dayOfWeek === 6 || i === daysInMonth) {
-                // Add empty cells to fill the row if it's the last row
                 while (currentRow.children.length < 7) {
                     const emptyCell = document.createElement('div');
                     emptyCell.classList.add('calendar-cell', 'disabled-date', 'empty-cell');
@@ -88,54 +67,56 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
-    function showTimeSlots(day) {
-        selectedDay = day;
+
+    async function showTimeSlots(date) {
         timeSlotsContainer.innerHTML = '';
 
-        // Dummy data
-        const availableTimeSlots = ['09:00 AM', '10:00 AM', '11:00 AM', '01:00 PM', '02:00 PM'];
+        try {
+            const response = await fetch(`/api/timeslots?meeting_id=${eventId}&date=${date}`);
+            const availableTimeSlots = await response.json();
 
-        const header = document.createElement('h2');
-        header.textContent = `Available Time Slots for ${monthNames[selectedMonth]} ${selectedDay}`;
-        timeSlotsContainer.appendChild(header);
+            const header = document.createElement('h2');
+            header.textContent = `Available Time Slots for ${monthNames[selectedMonth]} ${date.split('-')[2]}`;
+            timeSlotsContainer.appendChild(header);
 
-        availableTimeSlots.forEach(slot => {
-            const slotElement = document.createElement('div');
-            slotElement.classList.add('time-slot');
+            availableTimeSlots.forEach(slot => {
+                const slotElement = document.createElement('div');
+                slotElement.classList.add('time-slot');
 
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.value = slot;
-            checkbox.id = `slot-${slot.replace(/\s/g, '')}`;
-            checkbox.addEventListener('change', () => {
-                if (checkbox.checked) {
-                    selectedSlots.push(slot);
-                } else {
-                    const index = selectedSlots.indexOf(slot);
-                    if (index !== -1) {
-                        selectedSlots.splice(index, 1);
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = slot.timeslot_id;
+                checkbox.id = `slot-${slot.start_time.replace(/\s/g, '')}`;
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked) {
+                        selectedSlots.push(slot.timeslot_id);
+                    } else {
+                        const index = selectedSlots.indexOf(slot.timeslot_id);
+                        if (index !== -1) {
+                            selectedSlots.splice(index, 1);
+                        }
                     }
-                }
+                });
+                slotElement.appendChild(checkbox);
+
+                const label = document.createElement('label');
+                label.textContent = slot.start_time;
+                label.htmlFor = `slot-${slot.start_time.replace(/\s/g, '')}`;
+                slotElement.appendChild(label);
+
+                timeSlotsContainer.appendChild(slotElement);
             });
-            slotElement.appendChild(checkbox);
 
-            const label = document.createElement('label');
-            label.textContent = slot;
-            label.htmlFor = `slot-${slot.replace(/\s/g, '')}`; // Link label with checkbox
-            slotElement.appendChild(label);
-
-            timeSlotsContainer.appendChild(slotElement);
-        });
-
-        // Add submit button
-        const submitButton = document.createElement('button');
-        submitButton.textContent = 'Submit';
-        submitButton.addEventListener('click', submitRequest);
-        timeSlotsContainer.appendChild(submitButton);
+            const submitButton = document.createElement('button');
+            submitButton.textContent = 'Submit';
+            submitButton.addEventListener('click', submitRequest);
+            timeSlotsContainer.appendChild(submitButton);
+        } catch (error) {
+            console.error('Error fetching time slots:', error);
+        }
     }
 
-    function submitRequest() {
+    async function submitRequest() {
         const userName = userNameInput.value.trim();
         if (!userName) {
             alert('Please enter your name.');
@@ -145,6 +126,26 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedSlots.length === 0) {
             alert('Please select at least one time slot.');
             return;
+        }
+
+        try {
+            const response = await fetch('/api/vote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userName, selectedSlots })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to submit vote');
+            }
+
+            alert('Vote submitted successfully');
+        } catch (error) {
+            console.error('Error submitting vote:', error);
+            alert('Failed to submit vote');
         }
     }
 

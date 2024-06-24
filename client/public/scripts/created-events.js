@@ -1,31 +1,23 @@
-document.addEventListener("DOMContentLoaded", function ()
-{
+document.addEventListener("DOMContentLoaded", function() {
     var createAccountButton = document.querySelector('.header');
 
-    createAccountButton.addEventListener('click', function ()
-    {
-        window.location.href = './profile.html';
+    createAccountButton.addEventListener('click', function() {
+        window.location.href = 'profile.html';
     });
-});
- 
- /*document.addEventListener('DOMContentLoaded', () =>
-{
+
     const eventsList = document.querySelector('.events-list');
     const eventsError = document.querySelector('.events-error');
 
-    // Simulating fetching events data from a server
-    const fetchEvents = async () =>
-    {
-        try
-        {
-            // Replace this with an actual API call to fetch events for the current user
-            const response = await fetch('/api/created-events');
+    // Get the current user's ID from local storage
+    const userId = localStorage.getItem('user_id');
+
+    const fetchEvents = async () => {
+        try {
+            const response = await fetch(`/api/created-events?user_id=${userId}`);
             const events = await response.json();
 
-            if (events.length > 0)
-            {
-                events.forEach(event =>
-                {
+            if (events.length > 0) {
+                events.forEach(event => {
                     const eventItem = document.createElement('div');
                     eventItem.classList.add('event-item');
 
@@ -39,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function ()
 
                     const eventDateTime = document.createElement('div');
                     eventDateTime.classList.add('event-date-time');
-                    eventDateTime.textContent = new Date(event.dateTime).toLocaleString();
+                    eventDateTime.textContent = `${new Date(event.start_date).toLocaleDateString()} - ${new Date(event.end_date).toLocaleDateString()}`;
 
                     eventItem.appendChild(eventTitle);
                     eventItem.appendChild(eventDescription);
@@ -47,15 +39,13 @@ document.addEventListener("DOMContentLoaded", function ()
 
                     eventsList.appendChild(eventItem);
                 });
-            } else
-            {
+            } else {
                 eventsError.textContent = 'No events found.';
             }
-        } catch (error)
-        {
+        } catch (error) {
             eventsError.textContent = 'Failed to fetch events.';
         }
     };
 
     fetchEvents();
-});*/
+});
