@@ -1,0 +1,72 @@
+.left-content {
+	width: 50%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.right-content {
+	width: 50%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: white;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, .1), 0 8px 16px rgba(0, 0, 0, .1);
+	border-radius: 8px;
+	padding: 2rem;
+	box-sizing: border-box;
+}
+
+.logo-container {
+	margin-bottom: 2rem;
+}
+
+.right-content input {
+	width: 100%;
+	max-width: 300px;
+	height: 48px;
+	border: var(--border);
+	font-size: 20px;
+	padding-left: 1rem;
+	margin-top: 1rem;
+	box-sizing: border-box;
+}
+
+.login-form,
+.register-form {
+	width: 100%;
+	max-width: 300px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.login-btn,
+.register-btn {
+	width: 100%;
+	max-width: 300px;
+	height: 48px;
+	background: var(--blue-bg);
+	color: white;
+	border: none;
+	border-radius: 6px;
+	margin-top: 1rem;
+	font-size: 1.25rem;
+}
+
+.create-account-wrapper button {
+	width: 100%;
+	max-width: 300px;
+	height: 48px;
+	border-radius: 6px;
+	background: var(--blue-bg);
+	color: white;
+	border: none;
+	margin-top: 1rem;
+	font-size: 18px;
+}
+
+.register-error {
+	margin-top: 1rem;
+	color: red;
+}
