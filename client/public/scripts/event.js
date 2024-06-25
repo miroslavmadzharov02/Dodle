@@ -52,8 +52,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 body: JSON.stringify({
                     title,
                     description,
-                    start_date: startDateTime.toISOString(),
-                    end_date: endDateTime.toISOString(),
+                    start_date: startDate,
+                    end_date: endDate,
                     start_range: startHour,
                     end_range: endHour,
                     organizer_id: userId
