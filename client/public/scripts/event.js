@@ -33,9 +33,9 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         const startDateTime = new Date(startDate);
-        const endDateTime = new Date(endDate);
-
         startDateTime.setHours(startHour, 0, 0, 0);
+
+        const endDateTime = new Date(endDate);
         endDateTime.setHours(endHour, 0, 0, 0);
 
         if (startDateTime >= endDateTime) {
