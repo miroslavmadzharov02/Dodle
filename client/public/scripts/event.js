@@ -48,7 +48,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 throw new Error(errorData.error || 'Failed to create event');
             }
 
-            alert('Event created successfully');
             window.location.href = '/created-events.html';
         } catch (error) {
             console.error('Error creating event:', error);
