@@ -117,6 +117,31 @@ function generateTimeSlots(startDate, endDate) {
     return timeSlots;
 }
 
+app.get('/api/meeting-dates/:meeting_id', (req, res) => {
+    const meetingId = req.params.meeting_id;
+
+    const query = `
+        SELECT start_date, end_date 
+        FROM Meetings 
+        WHERE meeting_id = ?
+    `;
+
+    db.execute(query, [meetingId], (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Meeting not found' });
+        }
+
+        const { start_date, end_date } = results[0];
+        res.json({ start_date, end_date });
+    });
+});
+
+
+
 // Fetch TimeSlots
 app.get('/api/timeslots', (req, res) => {
     const { meeting_id, date } = req.query;
