@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
+const crypto = require('crypto'); // Import the crypto module
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -47,8 +48,9 @@ app.get('/event', (req, res) => {
 // Register User
 app.post('/api/register', (req, res) => {
     const { email, password } = req.body;
+    const hashedPassword = hashPassword(password, email); // Use email as salt
     const sql = 'INSERT INTO Users (email, password) VALUES (?, ?)';
-    db.query(sql, [email, password], (err, result) => {
+    db.query(sql, [email, hashedPassword], (err, result) => {
         if (err) {
             res.status(500).send('Error registering user');
         } else {
@@ -60,8 +62,9 @@ app.post('/api/register', (req, res) => {
 // Login User
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
+    const hashedPassword = hashPassword(password, email); // Use email as salt
     const sql = 'SELECT * FROM Users WHERE email = ? AND password = ?';
-    db.query(sql, [email, password], (err, results) => {
+    db.query(sql, [email, hashedPassword], (err, results) => {
         if (err) {
             res.status(500).send('Error logging in');
         } else if (results.length > 0) {
@@ -82,7 +85,7 @@ app.post('/api/create-meeting', (req, res) => {
             res.status(500).send({ error: 'Error creating meeting' });
         } else {
             const meetingId = result.insertId;
-            const timeSlots = generateTimeSlots(new Date(start_date), new Date(end_date));
+            const timeSlots = generateTimeSlots(new Date(start_date), new Date(end_date), start_range, end_range);
             const sqlInsertTimeSlot = 'INSERT INTO TimeSlots (meeting_id, date, start_time) VALUES ?';
             const timeSlotValues = timeSlots.map(slot => [meetingId, slot.split('T')[0], slot.split('T')[1].split('.')[0]]);
             
@@ -97,12 +100,12 @@ app.post('/api/create-meeting', (req, res) => {
     });
 });
 
-function generateTimeSlots(startDate, endDate) {
+function generateTimeSlots(startDate, endDate, startHour, endHour) {
     const timeSlots = [];
     let currentDate = new Date(startDate);
 
     while (currentDate <= endDate) {
-        for (let hour = 0; hour < 24; hour++) {
+        for (let hour = startHour; hour < endHour; hour++) {
             const slot = new Date(currentDate);
             slot.setHours(hour, 0, 0, 0);
             timeSlots.push(slot.toISOString());
@@ -135,8 +138,6 @@ app.get('/api/meeting-dates/:meeting_id', (req, res) => {
         res.json({ start_date, end_date });
     });
 });
-
-
 
 // Fetch TimeSlots
 app.get('/api/timeslots', (req, res) => {
@@ -179,7 +180,7 @@ app.get('/api/results/:meeting_id', (req, res) => {
         if (err) {
             res.status(500).send('Error fetching results');
         } else {
-            res.status(200).json(results);
+            res.status200.json(results);
         }
     });
 });
