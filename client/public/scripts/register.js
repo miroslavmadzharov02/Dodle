@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var createAccountButton = document.querySelector('.header');
 
     createAccountButton.addEventListener('click', function() {
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
     });
 });
 
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(errorData.error || 'Failed to register user');
             }
 
-            window.location.href = 'index.html';
+            window.location.href = 'login.html';
         } catch (error) {
             console.error(error);
             registerErrorSpan.textContent = error.message || 'Failed to register user';

@@ -5,6 +5,6 @@ document.addEventListener("DOMContentLoaded", function() {
     userId = -1;
 
     createAccountButton.addEventListener('click', function() {
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
     });
 });
