@@ -78,10 +78,10 @@ app.post('/api/login', (req, res) => {
 
 // Create Meeting
 app.post('/api/create-meeting', (req, res) => {
-    const { title, description, start_date, end_date, organizer_id } = req.body;
+    const { title, description, start_date, end_date, organizer_id, start_range, end_range } = req.body;
     
-    const sqlInsertMeeting = 'INSERT INTO Meetings (title, description, organizer_id, start_date, end_date) VALUES (?, ?, ?, ?, ?)';
-    db.query(sqlInsertMeeting, [title, description, organizer_id, start_date, end_date], (err, result) => {
+    const sqlInsertMeeting = 'INSERT INTO Meetings (title, description, organizer_id, start_date, end_date, start_range, end_range) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    db.query(sqlInsertMeeting, [title, description, organizer_id, start_date, end_date, start_range, end_range], (err, result) => {
         if (err) {
             res.status(500).send({ error: 'Error creating meeting' });
         } else {
