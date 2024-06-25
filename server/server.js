@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
-const crypto = require('crypto'); // Import the crypto module
+const crypto = require('crypto');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -53,7 +53,7 @@ function hashPassword(password, salt) {
 // Register User
 app.post('/api/register', (req, res) => {
     const { email, password } = req.body;
-    const hashedPassword = hashPassword(password, email); // Use email as salt
+    const hashedPassword = hashPassword(password, email);
     const sql = 'INSERT INTO Users (email, password) VALUES (?, ?)';
     db.query(sql, [email, hashedPassword], (err, result) => {
         if (err) {
@@ -67,7 +67,7 @@ app.post('/api/register', (req, res) => {
 // Login User
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
-    const hashedPassword = hashPassword(password, email); // Use email as salt
+    const hashedPassword = hashPassword(password, email);
     const sql = 'SELECT * FROM Users WHERE email = ? AND password = ?';
     db.query(sql, [email, hashedPassword], (err, results) => {
         if (err) {
@@ -83,19 +83,31 @@ app.post('/api/login', (req, res) => {
 // Create Meeting
 app.post('/api/create-meeting', (req, res) => {
     const { title, description, start_date, end_date, organizer_id, start_range, end_range } = req.body;
-    
+
     const sqlInsertMeeting = 'INSERT INTO Meetings (title, description, organizer_id, start_date, end_date, start_range, end_range) VALUES (?, ?, ?, ?, ?, ?, ?)';
     db.query(sqlInsertMeeting, [title, description, organizer_id, start_date, end_date, start_range, end_range], (err, result) => {
         if (err) {
-            res.status(500).send({ error: 'Error creating meeting' });
+            if (err.code === 'ER_DUP_ENTRY') {
+                res.status(400).send({ error: 'Meeting title already exists. Please choose a different title.' });
+            } else {
+                console.error('Error creating meeting:', err);
+                res.status(500).send({ error: 'Error creating meeting' });
+            }
         } else {
             const meetingId = result.insertId;
-            const timeSlots = generateTimeSlots(new Date(start_date), new Date(end_date), start_range, end_range);
+            const timeSlots = generateTimeSlots(start_date, end_date, start_range, end_range);
+
+            if (timeSlots.length === 0) {
+                res.status(500).send({ error: 'No time slots generated. Please check the date and time range.' });
+                return;
+            }
+
             const sqlInsertTimeSlot = 'INSERT INTO TimeSlots (meeting_id, date, start_time) VALUES ?';
-            const timeSlotValues = timeSlots.map(slot => [meetingId, slot.split('T')[0], slot.split('T')[1].split('.')[0]]);
-            
+            const timeSlotValues = timeSlots.map(slot => [meetingId, slot.date, slot.time]);
+
             db.query(sqlInsertTimeSlot, [timeSlotValues], (err, result) => {
                 if (err) {
+                    console.error('Error creating time slots:', err);
                     res.status(500).send({ error: 'Error creating time slots' });
                 } else {
                     res.status(200).send('Meeting and time slots created');
@@ -108,16 +120,28 @@ app.post('/api/create-meeting', (req, res) => {
 function generateTimeSlots(startDate, endDate, startHour, endHour) {
     const timeSlots = [];
     let currentDate = new Date(startDate);
+    let endDateTime = new Date(endDate);
 
-    while (currentDate <= endDate) {
+    console.log(`Generating time slots from ${currentDate} to ${endDateTime} between hours ${startHour} and ${endHour}`);
+
+    // Ensure currentDate and endDateTime are at midnight
+    currentDate.setHours(0, 0, 0, 0);
+    endDateTime.setHours(0, 0, 0, 0);
+
+    while (currentDate <= endDateTime) {
         for (let hour = startHour; hour < endHour; hour++) {
             const slot = new Date(currentDate);
             slot.setHours(hour, 0, 0, 0);
-            timeSlots.push(slot.toISOString());
+
+            const date = slot.toISOString().split('T')[0];
+            const time = slot.toTimeString().split(' ')[0];
+            timeSlots.push({ date, time });
         }
         currentDate.setDate(currentDate.getDate() + 1);
+        currentDate.setHours(0, 0, 0, 0); // Reset to midnight to avoid time drift
     }
 
+    console.log(`Generated time slots:`, timeSlots);
     return timeSlots;
 }
 
@@ -134,7 +158,7 @@ app.get('/api/meeting-dates/:meeting_id', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        
+
         if (results.length === 0) {
             return res.status(404).json({ error: 'Meeting not found' });
         }
@@ -185,7 +209,7 @@ app.get('/api/results/:meeting_id', (req, res) => {
         if (err) {
             res.status(500).send('Error fetching results');
         } else {
-            res.status200.json(results);
+            res.status(200).json(results);
         }
     });
 });
