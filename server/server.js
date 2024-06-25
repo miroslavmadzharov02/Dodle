@@ -45,6 +45,11 @@ app.get('/event', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/public/event.html'));
 });
 
+// Hash password function
+function hashPassword(password, salt) {
+    return crypto.createHash('sha256').update(password + salt).digest('hex');
+}
+
 // Register User
 app.post('/api/register', (req, res) => {
     const { email, password } = req.body;
