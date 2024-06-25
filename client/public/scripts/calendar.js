@@ -7,10 +7,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const prevMonthBtn = document.getElementById('prevMonthBtn');
     const nextMonthBtn = document.getElementById('nextMonthBtn');
 
+    function parseUrlEventId() {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        return urlParams.get('eventId'); 
+    }
+
     let selectedSlots = [];
     let selectedMonth;
     let selectedYear;
-    let eventId;  // Assuming eventId is set from the URL or some other logic
+    let eventId = parseUrlEventId();  
 
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];

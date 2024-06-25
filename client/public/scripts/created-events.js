@@ -1,7 +1,9 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function ()
+{
     var createAccountButton = document.querySelector('.header');
 
-    createAccountButton.addEventListener('click', function() {
+    createAccountButton.addEventListener('click', function ()
+    {
         window.location.href = 'profile.html';
     });
 
@@ -11,13 +13,17 @@ document.addEventListener("DOMContentLoaded", function() {
     // Get the current user's ID from local storage
     const userId = localStorage.getItem('user_id');
 
-    const fetchEvents = async () => {
-        try {
+    const fetchEvents = async () =>
+    {
+        try
+        {
             const response = await fetch(`/api/created-events?user_id=${userId}`);
             const events = await response.json();
 
-            if (events.length > 0) {
-                events.forEach(event => {
+            if (events.length > 0)
+            {
+                events.forEach(event =>
+                {
                     const eventItem = document.createElement('div');
                     eventItem.classList.add('event-item');
 
@@ -33,16 +39,25 @@ document.addEventListener("DOMContentLoaded", function() {
                     eventDateTime.classList.add('event-date-time');
                     eventDateTime.textContent = `${new Date(event.start_date).toLocaleDateString()} - ${new Date(event.end_date).toLocaleDateString()}`;
 
+                    // Link generation
+                    const calendarLink = document.createElement('a');
+                    calendarLink.textContent = 'Get link for event';
+                    calendarLink.href = `calendar.html?eventId=${event.id}`;
+                    calendarLink.classList.add('calendar-link');
+
                     eventItem.appendChild(eventTitle);
                     eventItem.appendChild(eventDescription);
                     eventItem.appendChild(eventDateTime);
+                    eventItem.appendChild(calendarLink);
 
                     eventsList.appendChild(eventItem);
                 });
-            } else {
+            } else
+            {
                 eventsError.textContent = 'No events found.';
             }
-        } catch (error) {
+        } catch (error)
+        {
             eventsError.textContent = 'Failed to fetch events.';
         }
     };
