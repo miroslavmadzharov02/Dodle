@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const eventDescriptionInput = document.querySelector('.event-description');
     const eventStartDateInput = document.querySelectorAll('.event-date-time')[0];
     const eventEndDateInput = document.querySelectorAll('.event-date-time')[1];
+    const eventStartHourInput = document.querySelectorAll('.event-hour')[0];
+    const eventEndHourInput = document.querySelectorAll('.event-hour')[1];
     const eventErrorSpan = document.querySelector('.event-error');
 
     // Get the current user's ID from local storage
@@ -22,9 +24,22 @@ document.addEventListener("DOMContentLoaded", function() {
         const description = eventDescriptionInput.value.trim();
         const startDate = eventStartDateInput.value;
         const endDate = eventEndDateInput.value;
+        const startHour = eventStartHourInput.value;
+        const endHour = eventEndHourInput.value;
 
-        if (!title || !description || !startDate || !endDate) {
+        if (!title || !description || !startDate || !endDate || !startHour || !endHour) {
             eventErrorSpan.textContent = 'Please fill in all fields.';
+            return;
+        }
+
+        const startDateTime = new Date(startDate);
+        const endDateTime = new Date(endDate);
+
+        startDateTime.setHours(startHour, 0, 0, 0);
+        endDateTime.setHours(endHour, 0, 0, 0);
+
+        if (startDateTime >= endDateTime) {
+            eventErrorSpan.textContent = 'End date and time must be later than start date and time.';
             return;
         }
 
@@ -37,8 +52,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 body: JSON.stringify({
                     title,
                     description,
-                    start_date: startDate,
-                    end_date: endDate,
+                    start_date: startDateTime.toISOString(),
+                    end_date: endDateTime.toISOString(),
                     organizer_id: userId
                 })
             });

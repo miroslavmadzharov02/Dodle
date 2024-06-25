@@ -7,6 +7,9 @@
     "start": "node server",
     "dev": "nodemon server"
   },
+  "nodemonConfig": {
+  "ext": "js,html"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
