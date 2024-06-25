@@ -38,6 +38,11 @@ document.addEventListener("DOMContentLoaded", function() {
         const endDateTime = new Date(endDate);
         endDateTime.setHours(endHour, 0, 0, 0);
 
+        let now = new Date();
+        if (now >= startDateTime || now >= endDateTime){
+            eventErrorSpan.textContent = 'Dates must be selected after current date.';
+            return;
+        }
         if (startDateTime >= endDateTime) {
             eventErrorSpan.textContent = 'End date and time must be later than start date and time.';
             return;
