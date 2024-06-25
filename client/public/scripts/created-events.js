@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function ()
                     // Link generation
                     const calendarLink = document.createElement('a');
                     calendarLink.textContent = 'Get link for event';
-                    calendarLink.href = `calendar.html?eventId=${event.id}`;
+                    calendarLink.href = `calendar.html?eventId=${event.meeting_id}`;
                     calendarLink.classList.add('calendar-link');
 
                     eventItem.appendChild(eventTitle);
