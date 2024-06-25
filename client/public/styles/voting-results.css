@@ -1,0 +1,117 @@
+body, html {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f8f9fa;
+    color: #333;
+    line-height: 1.6;
+}
+
+
+.container {
+    max-width: 40rem;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: white;
+    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
+    border-radius: 0.75rem;
+}
+
+
+header {
+    border-bottom: 0.125rem solid #007bff;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+header h1 {
+    color: #007bff;
+    font-size: 2rem;
+}
+
+
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.navigation button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 0.3125rem;
+    transition: background-color 0.3s ease;
+}
+
+.navigation button:hover {
+    background-color: #0056b3;
+}
+
+.navigation span {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+
+main {
+    margin: 1.5rem 0;
+}
+
+.time-slot {
+    padding: 0.75rem;
+    background: #e9ecef;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+.time-slot:nth-child(odd) {
+    background: #dee2e6;
+}
+
+.time-slot:hover {
+    background-color: #ced4da;
+}
+
+.time-slot:hover .tooltip {
+    display: block;
+}
+
+.tooltip {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background-color: #333;
+    color: #fff;
+    border-radius: 0.25rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+
+footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 0.75rem;
+    border-top: 0.0625rem solid #ccc;
+}
+
+footer p {
+    color: #566;
+}
