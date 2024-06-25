@@ -44,10 +44,6 @@ app.get('/event', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/public/event.html'));
 });
 
-app.get('/calendar', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/public/calendar.html'));
-});
-
 // Register User
 app.post('/api/register', (req, res) => {
     const { email, password } = req.body;
