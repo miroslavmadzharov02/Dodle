@@ -11,8 +11,8 @@ CREATE TABLE Meetings (
     organizer_id INT NOT NULL,
     start_date DATE,
     end_date DATE,
-    start_range TIME NOT NULL,
-    end_range TIME NOT NULL,
+    start_range INT NOT NULL,
+    end_range INT NOT NULL,
     FOREIGN KEY (organizer_id) REFERENCES Users(user_id)
 );
 

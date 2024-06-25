@@ -54,6 +54,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     description,
                     start_date: startDateTime.toISOString(),
                     end_date: endDateTime.toISOString(),
+                    start_range: startHour,
+                    end_range: endHour,
                     organizer_id: userId
                 })
             });
