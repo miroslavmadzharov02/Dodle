@@ -14,11 +14,12 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/public')));
 
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'yourusername',
-    password: 'yourpassword',
-    database: 'yourdatabase'
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
+
 
 db.connect(err => {
     if (err) {
@@ -128,8 +129,6 @@ function generateTimeSlots(startDate, endDate, startHour, endHour) {
     const timeSlots = [];
     let currentDate = new Date(startDate);
     let endDateTime = new Date(endDate);
-
-    console.log(`Generating time slots from ${currentDate} to ${endDateTime} between hours ${startHour} and ${endHour}`);
 
     // Ensure currentDate and endDateTime are at midnight UTC to avoid time zone issues
     currentDate.setUTCHours(0, 0, 0, 0);
