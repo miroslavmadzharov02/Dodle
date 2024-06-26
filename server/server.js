@@ -147,7 +147,6 @@ function generateTimeSlots(startDate, endDate, startHour, endHour) {
         currentDate.setUTCDate(currentDate.getUTCDate() + 1);
     }
 
-    console.log(`Generated time slots:`, timeSlots);
     return timeSlots;
 }
 
