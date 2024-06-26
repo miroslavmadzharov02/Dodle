@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         let now = new Date();
         if (now >= startDateTime || now >= endDateTime){
-            eventErrorSpan.textContent = 'Dates must be selected after current date.';
+            eventErrorSpan.textContent = 'Date selected must not be in the past.';
             return;
         }
         if (startDateTime >= endDateTime) {
@@ -78,7 +78,6 @@ document.addEventListener("DOMContentLoaded", function() {
             eventErrorSpan.textContent = 'Event created successfully!';
         } catch (error) {
             console.error('Error creating event:', error);
-            eventErrorSpan.textContent = error.message || 'Failed to create event';
         }
     });
 });
