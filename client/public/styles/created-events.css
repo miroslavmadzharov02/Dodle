@@ -3,6 +3,7 @@
 }
 
 .right-content {
+    height: 40rem;
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, .1), 0 8px 16px rgba(0, 0, 0, .1);
     border-radius: 8px;
@@ -11,6 +12,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 5rem;
+    overflow-y: auto;
 }
 
 .logo-container {
@@ -71,20 +74,40 @@
 	margin-left: 20px;
 	padding-top: 20px;
 }
-.left{
+.left {
     display: flex;
-  align-items: center;
-  cursor: pointer;
-  }
+    align-items: center;
+    justify-content: center; 
+    cursor: pointer;
+    background-color: var(--purple-bg);
+    color: white; 
+    padding: 0.5rem 1rem; 
+    border: none; 
+    border-radius: 0.5rem; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+    text-align: center; 
+    font-size: 1rem; 
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; 
+}
 
-  a{
-    color: rgb(127, 109, 215);
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: rgb(0, 0, 0);
-    text-decoration: none;
-  }
-  a:hover{
-    color: rgb(146, 131, 223);
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: rgb(67, 67, 67);
-  }
+.left:hover {
+    background-color: rgb(157, 127, 217);
+	color: rgb(255, 255, 255);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
+}
+
+
+a{
+	color: rgb(0, 0, 0);
+	text-decoration: none;
+}
+a:hover{
+	color: rgb(255, 255, 255);
+}
+.calendar-link{
+    color: black;
+    text-decoration: underline;
+}
+.calendar-link:hover{
+    color:  rgb(157, 127, 217);
+}

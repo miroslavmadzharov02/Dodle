@@ -29,8 +29,7 @@ body::before {
 }
 .content {
     position: relative;
-    z-index: 1; /* Ensure content stays above the pseudo-element */
-    /* Add your other content styles here */
+    z-index: 1; 
 }
 
 .invalid-field:focus {
@@ -42,7 +41,7 @@ body::before {
 	justify-content: center;
 	align-items: center;
 	background: var(--bg);
-	height: 100vh;
+	height: 100%;
 }
 
 .header {

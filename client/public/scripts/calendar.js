@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     const calendarGrid = document.getElementById('calendarGrid');
     const currentMonthElement = document.getElementById('currentMonth');
     const timeSlotsContainer = document.getElementById('timeSlots');
@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let selectedMonth;
     let selectedYear;
     let predeterminedDates = [];
-    let meetingId;
 
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -30,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`/api/meeting-dates/${meetingId}`)
             .then(response => response.json())
             .then(data => {
-                const { start_date, end_date, start_range, end_range } = data;
+                const { start_date, end_date } = data;
                 const startDate = new Date(start_date);
                 const endDate = new Date(end_date);
                 predeterminedDates = getDatesInRange(startDate, endDate);
@@ -38,7 +37,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 selectedYear = today.getFullYear();
                 selectedMonth = today.getMonth();
                 generateCalendar(selectedYear, selectedMonth);
-                generateTimeSlots(start_range, end_range);
             })
             .catch(error => console.error('Error fetching meeting dates:', error));
     }
@@ -82,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (predeterminedDates.some(d => d.getTime() === date.getTime())) {
                 cell.classList.add('predetermined-date');
-                cell.addEventListener('click', () => showTimeSlots(date));
+                cell.addEventListener('click', () => showTimeSlots(i));
             } else {
                 cell.classList.add('disabled-date');
             }
@@ -101,40 +99,30 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function fetchTimeSlots(meetingId, date) {
-        fetch(`/api/timeslots?meeting_id=${meetingId}&date=${date}`)
-            .then(response => response.json())
-            .then(data => {
-                displayTimeSlots(data);
-            })
-            .catch(error => console.error('Error fetching time slots:', error));
-    }
-
     function showTimeSlots(day) {
-        const dateString = day.toISOString().split('T')[0];
+        selectedDay = day;
         timeSlotsContainer.innerHTML = '';
 
-        fetchTimeSlots(meetingId, dateString);
+        const availableTimeSlots = ['09:00 AM', '10:00 AM', '11:00 AM', '01:00 PM', '02:00 PM','03:00 PM','03:00 PM','03:00 PM','03:00 PM','03:00 PM','03:00 PM','03:00 PM','03:00 PM','03:00 PM','03:00 PM']
+
 
         const header = document.createElement('h2');
-        header.textContent = `Available Time Slots for ${monthNames[selectedMonth]} ${day.getDate()}`;
+        header.textContent = `Available Time Slots for ${monthNames[selectedMonth]} ${selectedDay}`;
         timeSlotsContainer.appendChild(header);
-    }
 
-    function displayTimeSlots(availableTimeSlots) {
         availableTimeSlots.forEach(slot => {
             const slotElement = document.createElement('div');
-            slotElement.className = 'time-slot';
+            slotElement.classList.add('time-slot');
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.value = slot.timeslot_id;
-            checkbox.id = `slot-${slot.timeslot_id}`;
+            checkbox.value = slot;
+            checkbox.id = `slot-${slot.replace(/\s/g, '')}`;
             checkbox.addEventListener('change', () => {
                 if (checkbox.checked) {
-                    selectedSlots.push(slot.timeslot_id);
+                    selectedSlots.push(slot);
                 } else {
-                    const index = selectedSlots.indexOf(slot.timeslot_id);
+                    const index = selectedSlots.indexOf(slot);
                     if (index !== -1) {
                         selectedSlots.splice(index, 1);
                     }
@@ -143,8 +131,8 @@ document.addEventListener('DOMContentLoaded', function () {
             slotElement.appendChild(checkbox);
 
             const label = document.createElement('label');
-            label.textContent = `${slot.start_time}`;
-            label.htmlFor = `slot-${slot.timeslot_id}`;
+            label.textContent = slot;
+            label.htmlFor = `slot-${slot.replace(/\s/g, '')}`;
             slotElement.appendChild(label);
 
             timeSlotsContainer.appendChild(slotElement);
@@ -167,24 +155,6 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Please select at least one time slot.');
             return;
         }
-
-        fetch('/api/vote', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ userName, selectedSlots })
-        })
-        .then(response => {
-            if (response.ok) {
-                alert('Vote recorded successfully.');
-                selectedSlots = [];
-                timeSlotsContainer.innerHTML = '';
-            } else {
-                alert('Failed to record vote.');
-            }
-        })
-        .catch(error => console.error('Error submitting vote:', error));
     }
 
     function showPrevMonth() {
@@ -207,33 +177,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     prevMonthBtn.addEventListener('click', showPrevMonth);
     nextMonthBtn.addEventListener('click', showNextMonth);
-
+    
     function parseUrlEventId() {
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        const eventId = urlParams.get('eventId'); 
-        if (!eventId) return null;
-
-        return fetch(`/api/verify-link?eventId=${eventId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);
-                    return null;
-                }
-                return data.meeting_id;
-            })
-            .catch(error => {
-                console.error('Error verifying event link:', error);
-                return null;
-            });
+        return urlParams.get('eventId'); 
     }
 
-    parseUrlEventId().then(id => {
-        if (id) {
-            meetingId = id;
-            fetchMeetingDates(meetingId);
-        }
-    });
-});
 
+    const meetingId = parseUrlEventId();
+    fetchMeetingDates(meetingId);
+});
