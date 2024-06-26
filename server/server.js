@@ -20,7 +20,6 @@ const db = mysql.createConnection({
     database: process.env.DB_NAME
 });
 
-
 db.connect(err => {
     if (err) {
         console.error('Error connecting to the database:', err);
@@ -243,7 +242,8 @@ app.get('/api/created-events', (req, res) => {
                 const hash = hashId(event.meeting_id.toString(), SECRET_SALT);
                 return {
                     ...event,
-                    link: `calendar.html?eventId=${hash}-${event.meeting_id}`
+                    link: `calendar.html?eventId=${hash}-${event.meeting_id}`,
+                    resultsLink: `voting-results.html?eventId=${hash}-${event.meeting_id}`
                 };
             });
             res.status(200).json(events);

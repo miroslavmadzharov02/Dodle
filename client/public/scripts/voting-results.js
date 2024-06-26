@@ -1,55 +1,60 @@
-"use strict";
-const data = [
-    {
-        date: "2024-05-14",
-        slots: [
-            { time: "09:00", votes: 5, voters: ["Alice", "Bob", "Charlie", "David", "Eve"] },
-            { time: "11:00", votes: 3, voters: ["Alice", "Bob", "Charlie"] },
-            { time: "14:00", votes: 7, voters: ["Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace"] }
-        ]
-    },
-    {
-        date: "2024-05-15",
-        slots: [
-            { time: "10:00", votes: 4, voters: ["Alice", "Bob", "Charlie", "David"] },
-            { time: "12:00", votes: 6, voters: ["Alice", "Bob", "Charlie", "David", "Eve", "Frank"] },
-            { time: "16:00", votes: 2, voters: ["Alice", "Bob"] }
-        ]
-    },
-    {
-        date: "2024-05-16",
-        slots: [
-            { time: "09:00", votes: 3, voters: ["Alice", "Bob", "Charlie"] },
-            { time: "13:00", votes: 8, voters: ["Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Hank"] },
-            { time: "15:00", votes: 5, voters: ["Alice", "Bob", "Charlie", "David", "Eve"] }
-        ]
+document.addEventListener('DOMContentLoaded', function() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const eventId = urlParams.get('eventId');
+
+    function fetchVotingResults(meetingId) {
+        fetch(`/api/results/${meetingId}`)
+            .then(response => response.json())
+            .then(data => {
+                renderResults(data);
+            })
+            .catch(error => console.error('Error fetching voting results:', error));
     }
-];
-let currentIndex = 0;
-function renderTimeSlots(slots) {
-    slots.sort((a, b) => b.votes - a.votes);
-    return slots.map(slot => `<div class="time-slot">
-            <span>${slot.time}</span>
-            <span class="votes" title="${slot.voters.join(', ')}">${slot.votes} votes</span>
-            <div class="tooltip">${slot.voters.join(', ')}</div>
-        </div>`).join('');
-}
-function render() {
-    const { date, slots } = data[currentIndex];
-    document.getElementById('selectedDate').innerText = date;
-    document.getElementById('app').innerHTML = renderTimeSlots(slots);
-}
-document.getElementById('prevDay').addEventListener('click', () => {
-    if (currentIndex > 0) {
-        currentIndex--;
-        render();
+
+    function renderResults(data) {
+        data.sort((a, b) => b.votes_count - a.votes_count);
+        const resultsContainer = document.getElementById('app');
+        resultsContainer.innerHTML = '';
+
+        data.forEach(slot => {
+            const slotElement = document.createElement('div');
+            slotElement.className = 'time-slot';
+
+            const timeSpan = document.createElement('span');
+            timeSpan.textContent = `${slot.date} ${slot.start_time}`;
+            slotElement.appendChild(timeSpan);
+
+            const votesSpan = document.createElement('span');
+            votesSpan.className = 'votes';
+            votesSpan.textContent = `${slot.votes_count} votes`;
+            slotElement.appendChild(votesSpan);
+
+            resultsContainer.appendChild(slotElement);
+        });
     }
+
+    function parseUrlEventId() {
+        if (!eventId) return null;
+
+        return fetch(`/api/verify-link?eventId=${eventId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return null;
+                }
+                return data.meeting_id;
+            })
+            .catch(error => {
+                console.error('Error verifying event link:', error);
+                return null;
+            });
+    }
+
+    parseUrlEventId().then(meetingId => {
+        if (meetingId) {
+            fetchVotingResults(meetingId);
+        }
+    });
 });
-document.getElementById('nextDay').addEventListener('click', () => {
-    if (currentIndex < data.length - 1) {
-        currentIndex++;
-        render();
-    }
-});
-render();
-//# sourceMappingURL=app.js.map

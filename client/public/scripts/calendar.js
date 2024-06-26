@@ -177,9 +177,10 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => {
             if (response.ok) {
-                alert('Vote recorded successfully.');
-                selectedSlots = [];
-                timeSlotsContainer.innerHTML = '';
+                const queryString = window.location.search;
+                const urlParams = new URLSearchParams(queryString);
+                const eventId = urlParams.get('eventId');
+                window.location.href = `voting-results.html?eventId=${eventId}`;
             } else {
                 alert('Failed to record vote.');
             }
@@ -236,4 +237,3 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
-

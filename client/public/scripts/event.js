@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const eventStartHourInput = document.querySelectorAll('.event-hour')[0];
     const eventEndHourInput = document.querySelectorAll('.event-hour')[1];
     const eventErrorSpan = document.querySelector('.event-error');
+    const viewResultsLink = document.getElementById('viewResults');
 
     // Get the current user's ID from local storage
     const userId = localStorage.getItem('user_id');
@@ -70,7 +71,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 throw new Error(errorData.error || 'Failed to create event');
             }
 
-            window.location.href = '/created-events.html';
+            const resultData = await response.json();
+            const meetingId = resultData.meetingId;
+            viewResultsLink.href = `voting-results.html?eventId=${meetingId}`;
+            viewResultsLink.style.display = 'block';
+            eventErrorSpan.textContent = 'Event created successfully!';
         } catch (error) {
             console.error('Error creating event:', error);
             eventErrorSpan.textContent = error.message || 'Failed to create event';

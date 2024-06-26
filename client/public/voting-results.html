@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vote for Meeting Times</title>
+    <title>Voting Results - Dodle</title>
     <link rel="stylesheet" href="styles/voting-results.css">
+    <script src="./scripts/voting-results.js" defer></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Vote for Meeting Times</h1>
+            <h1>Voting Results</h1>
         </header>
         <div class="navigation">
             <button id="prevDay">&larr; Previous</button>
@@ -17,12 +18,11 @@
             <button id="nextDay">Next &rarr;</button>
         </div>
         <main id="app">
-            <!-- Time slots will be rendered here by TypeScript -->
+            <!-- Time slots will be rendered here by JavaScript -->
         </main>
         <footer>
             <p>Thank you for participating!</p>
         </footer>
     </div>
-    <script src="scripts/voting-results.js"></script>
 </body>
 </html>

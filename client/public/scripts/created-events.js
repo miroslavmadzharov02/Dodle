@@ -39,10 +39,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     calendarLink.href = event.link;
                     calendarLink.classList.add('calendar-link');
 
+                    const resultsLink = document.createElement('a');
+                    resultsLink.textContent = 'View Results';
+                    resultsLink.href = `voting-results.html?eventId=${event.link.split('=')[1]}`;
+                    resultsLink.classList.add('results-link');
+
                     eventItem.appendChild(eventTitle);
                     eventItem.appendChild(eventDescription);
                     eventItem.appendChild(eventDateTime);
                     eventItem.appendChild(calendarLink);
+                    eventItem.appendChild(resultsLink);
 
                     eventsList.appendChild(eventItem);
                 });
