@@ -65,3 +65,26 @@
     color: red;
     margin-top: 1rem;
 }
+
+.header{
+	margin-top: 0;
+	margin-left: 20px;
+	padding-top: 20px;
+}
+.left{
+    display: flex;
+  align-items: center;
+  cursor: pointer;
+  }
+
+  a{
+    color: rgb(127, 109, 215);
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: rgb(0, 0, 0);
+    text-decoration: none;
+  }
+  a:hover{
+    color: rgb(146, 131, 223);
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: rgb(67, 67, 67);
+  }

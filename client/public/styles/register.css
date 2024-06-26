@@ -1,11 +1,17 @@
 .main {
 	background: var(--bg);
+	display: flex;
+	justify-content: space-between;
+	padding: 500px;
+	padding-top: 0;
+	padding-bottom: 0;
 }
 
 .right-content {
 	background-color: white;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, .1), 0 8px 16px rgba(0, 0, 0, .1);
 	border-radius: 8px;
+	margin-bottom: 100px;
 	padding: 2rem;
 	box-sizing: border-box;
 	display: flex;
@@ -48,8 +54,47 @@
 	max-width: 300px;
 	height: 48px;
 	border-radius: 6px;
-	background-color: var(--blue-bg);
+	background-color: var(--purple-bg);
 	border: none;
 	margin-top: 1.5rem;
 	font-size: 1.25rem;
+	cursor: pointer;
 }
+
+.register-btn:hover{
+	background-color: rgb(157, 127, 217);
+	color: rgb(255, 255, 255);
+}
+
+.left{
+	display: flex;
+align-items: center;
+cursor: pointer;
+}
+
+
+a{
+	color: rgb(127, 109, 215);
+	-webkit-text-stroke-width: 1px;
+	-webkit-text-stroke-color: rgb(0, 0, 0);
+	text-decoration: none;
+}
+a:hover{
+	color: rgb(146, 131, 223);
+	-webkit-text-stroke-width: 1px;
+	-webkit-text-stroke-color: rgb(67, 67, 67);
+}
+.header{
+	margin-top: 0;
+	margin-left: 20px;
+	padding-top: 20px;
+}
+.logo-description{
+	margin: 0;
+	padding: 0;
+}
+  
+
+
+ 
+  

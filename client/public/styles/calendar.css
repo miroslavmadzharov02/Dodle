@@ -1,31 +1,36 @@
+
 body {
+    background: var(--bg);
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f8f8f8;
+    overflow-x: hidden;
+
 }
 
 .container {
     max-width: 80%;
     margin: 2rem auto;
     padding: 2rem;
-    background-color: #fff;
     border-radius: 1rem;
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
 }
 
 .calendar-container {
+    
     display: flex;
     justify-content: space-between;
     margin-top: 1rem;
 }
 
 .calendar {
-    flex: 0 0 60%;
+   
+    background-color: rgb(255, 255, 255);
+    flex: 2;
     border: 2px solid #ccc;
     border-radius: 1rem;
-    margin-right: 1rem;
     padding: 1rem;
+    margin: 1rem;
 }
 
 .calendar-header {
@@ -79,12 +84,12 @@ body {
 }
 
 .predetermined-date {
-    background-color: lightgreen;
+    background-color: rgb(187, 187, 241);
     cursor: pointer;
 }
 
 .predetermined-date:hover {
-    background-color: green;
+    background-color:rgb(157, 127, 217);
     color: white;
 }
 
@@ -99,10 +104,12 @@ body {
 }
 
 .time-slots {
-    flex: 0 0 35%;
+    background-color: white;
+    flex: 1.2;
     border: 2px solid #ccc;
     border-radius: 1rem;
     padding: 1rem;
+    margin: 1rem;
 }
 
 .time-slot {
@@ -120,9 +127,46 @@ body {
 }
 
 #userName {
+    margin-left: 15px;
     margin-bottom: 1rem;
+    margin-top: 1rem;
     padding: 1rem;
     border: 2px solid #ccc;
     border-radius: 1rem;
     font-size: 1rem;
+}
+
+.header{
+    margin-top: 0;
+    margin-left: 20px;
+    padding-top: 20px;
+  }
+
+  .left{
+    width: 9rem;
+    background-color: rgb(187, 187, 241);
+    margin-left: 45%;
+    margin-top: 2rem;
+    border: 1px solid #000000;
+    border-radius: 1rem;
+	display: flex;
+    text-align: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.left:hover{
+    background-color:rgb(157, 127, 217);
+}
+
+
+a{
+	color: rgb(0, 0, 0);
+	
+	text-decoration: none;
+}
+a:hover{
+	color: rgb(255, 255, 255);
+	-webkit-text-stroke-width: 1px;
+	-webkit-text-stroke-color: rgb(233, 231, 231);
 }
