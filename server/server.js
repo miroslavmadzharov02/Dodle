@@ -14,11 +14,12 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/public')));
 
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'yourusername',
-    password: 'yourpassword',
-    database: 'yourdatabase'
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
+
 
 db.connect(err => {
     if (err) {
