@@ -129,8 +129,6 @@ function generateTimeSlots(startDate, endDate, startHour, endHour) {
     let currentDate = new Date(startDate);
     let endDateTime = new Date(endDate);
 
-    console.log(`Generating time slots from ${currentDate} to ${endDateTime} between hours ${startHour} and ${endHour}`);
-
     // Ensure currentDate and endDateTime are at midnight UTC to avoid time zone issues
     currentDate.setUTCHours(0, 0, 0, 0);
     endDateTime.setUTCHours(0, 0, 0, 0);
