@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`/api/meeting-dates/${meetingId}`)
             .then(response => response.json())
             .then(data => {
-                const { start_date, end_date } = data;
+                const { start_date, end_date, start_range, end_range } = data;
                 const startDate = new Date(start_date);
                 const endDate = new Date(end_date);
                 predeterminedDates = getDatesInRange(startDate, endDate);
@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 selectedYear = today.getFullYear();
                 selectedMonth = today.getMonth();
                 generateCalendar(selectedYear, selectedMonth);
+                generateTimeSlots(start_range, end_range);
             })
             .catch(error => console.error('Error fetching meeting dates:', error));
     }
@@ -123,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function displayTimeSlots(availableTimeSlots) {
         availableTimeSlots.forEach(slot => {
             const slotElement = document.createElement('div');
-            slotElement.classList.add('time-slot');
+            slotElement.className = 'time-slot';
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
@@ -235,3 +236,4 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
