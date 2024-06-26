@@ -1,4 +1,13 @@
+function parseUrlEventId() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get('eventId'); 
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    const meetingId = parseUrlEventId();
+    fetchMeetingDates(meetingId);
+   
     const calendarGrid = document.getElementById('calendarGrid');
     const currentMonthElement = document.getElementById('currentMonth');
     const timeSlotsContainer = document.getElementById('timeSlots');
@@ -29,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/api/meeting-dates/${meetingId}`)
             .then(response => response.json())
             .then(data => {
-                const { start_date, end_date } = data;
+                const { start_date, end_date, start_range, end_range } = data;
                 const startDate = new Date(start_date);
                 const endDate = new Date(end_date);
                 predeterminedDates = getDatesInRange(startDate, endDate);
@@ -37,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectedYear = today.getFullYear();
                 selectedMonth = today.getMonth();
                 generateCalendar(selectedYear, selectedMonth);
+                generateTimeSlots(start_range, end_range);
             })
             .catch(error => console.error('Error fetching meeting dates:', error));
     }
@@ -99,47 +109,53 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function showTimeSlots(day) {
-        selectedDay = day;
+    function generateTimeSlots(startRange, endRange) {
+        const timeSlotsContainer = document.getElementById('timeSlots');
         timeSlotsContainer.innerHTML = '';
-
-        const availableTimeSlots = ['09:00 AM', '10:00 AM', '11:00 AM', '01:00 PM', '02:00 PM'];
-
+    
         const header = document.createElement('h2');
-        header.textContent = `Available Time Slots for ${monthNames[selectedMonth]} ${selectedDay}`;
+        header.textContent = `Available Time Slots`;
         timeSlotsContainer.appendChild(header);
-
-        availableTimeSlots.forEach(slot => {
+    
+        const slotsDiv = document.createElement('div');
+        slotsDiv.className = 'slots-container';
+    
+        const selectedSlots = [];
+    
+        for (let i = startRange; i < endRange; i++) {
+            const timeSlot = `${i}:00`;
             const slotElement = document.createElement('div');
-            slotElement.classList.add('time-slot');
-
+            slotElement.className = 'time-slot';
+    
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.value = slot;
-            checkbox.id = `slot-${slot.replace(/\s/g, '')}`;
+            checkbox.value = timeSlot;
+            checkbox.id = `slot-${timeSlot.replace(/\s/g, '')}`;
             checkbox.addEventListener('change', () => {
                 if (checkbox.checked) {
-                    selectedSlots.push(slot);
+                    selectedSlots.push(timeSlot);
                 } else {
-                    const index = selectedSlots.indexOf(slot);
+                    const index = selectedSlots.indexOf(timeSlot);
                     if (index !== -1) {
                         selectedSlots.splice(index, 1);
                     }
                 }
             });
             slotElement.appendChild(checkbox);
-
+    
             const label = document.createElement('label');
-            label.textContent = slot;
-            label.htmlFor = `slot-${slot.replace(/\s/g, '')}`;
+            label.textContent = timeSlot;
+            label.htmlFor = `slot-${timeSlot.replace(/\s/g, '')}`;
             slotElement.appendChild(label);
-
-            timeSlotsContainer.appendChild(slotElement);
-        });
-
+    
+            slotsDiv.appendChild(slotElement);
+        }
+    
+        timeSlotsContainer.appendChild(slotsDiv);
+    
         const submitButton = document.createElement('button');
         submitButton.textContent = 'Submit';
-        submitButton.addEventListener('click', submitRequest);
+        submitButton.addEventListener('click', () => submitRequest(selectedSlots));
         timeSlotsContainer.appendChild(submitButton);
     }
 
@@ -176,14 +192,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     prevMonthBtn.addEventListener('click', showPrevMonth);
     nextMonthBtn.addEventListener('click', showNextMonth);
-    
-    function parseUrlEventId() {
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-        return urlParams.get('eventId'); 
-    }
-
-
-    const meetingId = parseUrlEventId();
-    fetchMeetingDates(meetingId);
 });

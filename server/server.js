@@ -149,7 +149,7 @@ app.get('/api/meeting-dates/:meeting_id', (req, res) => {
     const meetingId = req.params.meeting_id;
 
     const query = `
-        SELECT start_date, end_date 
+        SELECT start_date, end_date, start_range, end_range 
         FROM Meetings 
         WHERE meeting_id = ?
     `;
@@ -163,8 +163,8 @@ app.get('/api/meeting-dates/:meeting_id', (req, res) => {
             return res.status(404).json({ error: 'Meeting not found' });
         }
 
-        const { start_date, end_date } = results[0];
-        res.json({ start_date, end_date });
+        const { start_date, end_date, start_range, end_range } = results[0];
+        res.json({ start_date, end_date, start_range, end_range });
     });
 });
 
