@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const calendarGrid = document.getElementById('calendarGrid');
     const currentMonthElement = document.getElementById('currentMonth');
     const timeSlotsContainer = document.getElementById('timeSlots');
@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedMonth;
     let selectedYear;
     let predeterminedDates = [];
+    let meetingId;
 
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -80,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (predeterminedDates.some(d => d.getTime() === date.getTime())) {
                 cell.classList.add('predetermined-date');
-                cell.addEventListener('click', () => showTimeSlots(i));
+                cell.addEventListener('click', () => showTimeSlots(date));
             } else {
                 cell.classList.add('disabled-date');
             }
@@ -99,29 +100,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function fetchTimeSlots(meetingId, date) {
+        fetch(`/api/timeslots?meeting_id=${meetingId}&date=${date}`)
+            .then(response => response.json())
+            .then(data => {
+                displayTimeSlots(data);
+            })
+            .catch(error => console.error('Error fetching time slots:', error));
+    }
+
     function showTimeSlots(day) {
-        selectedDay = day;
+        const dateString = day.toISOString().split('T')[0];
         timeSlotsContainer.innerHTML = '';
 
-        const availableTimeSlots = ['09:00 AM', '10:00 AM', '11:00 AM', '01:00 PM', '02:00 PM'];
+        fetchTimeSlots(meetingId, dateString);
 
         const header = document.createElement('h2');
-        header.textContent = `Available Time Slots for ${monthNames[selectedMonth]} ${selectedDay}`;
+        header.textContent = `Available Time Slots for ${monthNames[selectedMonth]} ${day.getDate()}`;
         timeSlotsContainer.appendChild(header);
+    }
 
+    function displayTimeSlots(availableTimeSlots) {
         availableTimeSlots.forEach(slot => {
             const slotElement = document.createElement('div');
             slotElement.classList.add('time-slot');
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.value = slot;
-            checkbox.id = `slot-${slot.replace(/\s/g, '')}`;
+            checkbox.value = slot.timeslot_id;
+            checkbox.id = `slot-${slot.timeslot_id}`;
             checkbox.addEventListener('change', () => {
                 if (checkbox.checked) {
-                    selectedSlots.push(slot);
+                    selectedSlots.push(slot.timeslot_id);
                 } else {
-                    const index = selectedSlots.indexOf(slot);
+                    const index = selectedSlots.indexOf(slot.timeslot_id);
                     if (index !== -1) {
                         selectedSlots.splice(index, 1);
                     }
@@ -130,8 +142,8 @@ document.addEventListener('DOMContentLoaded', function() {
             slotElement.appendChild(checkbox);
 
             const label = document.createElement('label');
-            label.textContent = slot;
-            label.htmlFor = `slot-${slot.replace(/\s/g, '')}`;
+            label.textContent = `${slot.start_time}`;
+            label.htmlFor = `slot-${slot.timeslot_id}`;
             slotElement.appendChild(label);
 
             timeSlotsContainer.appendChild(slotElement);
@@ -154,6 +166,24 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Please select at least one time slot.');
             return;
         }
+
+        fetch('/api/vote', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userName, selectedSlots })
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Vote recorded successfully.');
+                selectedSlots = [];
+                timeSlotsContainer.innerHTML = '';
+            } else {
+                alert('Failed to record vote.');
+            }
+        })
+        .catch(error => console.error('Error submitting vote:', error));
     }
 
     function showPrevMonth() {
@@ -176,14 +206,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     prevMonthBtn.addEventListener('click', showPrevMonth);
     nextMonthBtn.addEventListener('click', showNextMonth);
-    
+
     function parseUrlEventId() {
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        return urlParams.get('eventId'); 
+        const eventId = urlParams.get('eventId'); 
+        if (!eventId) return null;
+
+        return fetch(`/api/verify-link?eventId=${eventId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return null;
+                }
+                return data.meeting_id;
+            })
+            .catch(error => {
+                console.error('Error verifying event link:', error);
+                return null;
+            });
     }
 
-
-    const meetingId = parseUrlEventId();
-    fetchMeetingDates(meetingId);
+    parseUrlEventId().then(id => {
+        if (id) {
+            meetingId = id;
+            fetchMeetingDates(meetingId);
+        }
+    });
 });

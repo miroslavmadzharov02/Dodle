@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const mysql = require('mysql2');
@@ -6,6 +7,8 @@ const crypto = require('crypto');
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+const SECRET_SALT = process.env.SECRET_SALT;
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/public')));
@@ -24,6 +27,10 @@ db.connect(err => {
         console.log('Connected to the MySQL database');
     }
 });
+
+function hashId(id, salt) {
+    return crypto.createHash('sha256').update(id + salt).digest('hex');
+}
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/public/login.html'));
@@ -124,21 +131,20 @@ function generateTimeSlots(startDate, endDate, startHour, endHour) {
 
     console.log(`Generating time slots from ${currentDate} to ${endDateTime} between hours ${startHour} and ${endHour}`);
 
-    // Ensure currentDate and endDateTime are at midnight
-    currentDate.setHours(0, 0, 0, 0);
-    endDateTime.setHours(0, 0, 0, 0);
+    // Ensure currentDate and endDateTime are at midnight UTC to avoid time zone issues
+    currentDate.setUTCHours(0, 0, 0, 0);
+    endDateTime.setUTCHours(0, 0, 0, 0);
 
     while (currentDate <= endDateTime) {
         for (let hour = startHour; hour < endHour; hour++) {
             const slot = new Date(currentDate);
-            slot.setHours(hour, 0, 0, 0);
+            slot.setUTCHours(hour, 0, 0, 0);
 
             const date = slot.toISOString().split('T')[0];
             const time = slot.toTimeString().split(' ')[0];
             timeSlots.push({ date, time });
         }
-        currentDate.setDate(currentDate.getDate() + 1);
-        currentDate.setHours(0, 0, 0, 0); // Reset to midnight to avoid time drift
+        currentDate.setUTCDate(currentDate.getUTCDate() + 1);
     }
 
     console.log(`Generated time slots:`, timeSlots);
@@ -179,6 +185,19 @@ app.get('/api/timeslots', (req, res) => {
             res.status(200).json(results);
         }
     });
+});
+
+// Verify and fetch meeting ID from hashed link
+app.get('/api/verify-link', (req, res) => {
+    const { eventId } = req.query;
+    const [hash, id] = eventId.split('-');
+
+    const expectedHash = hashId(id, SECRET_SALT);
+    if (hash !== expectedHash) {
+        return res.status(400).json({ error: 'Invalid event link.' });
+    }
+
+    res.status(200).json({ meeting_id: id });
 });
 
 // Vote for TimeSlot
@@ -222,7 +241,14 @@ app.get('/api/created-events', (req, res) => {
         if (err) {
             res.status(500).send('Error fetching created events');
         } else {
-            res.status(200).json(results);
+            const events = results.map(event => {
+                const hash = hashId(event.meeting_id.toString(), SECRET_SALT);
+                return {
+                    ...event,
+                    link: `calendar.html?eventId=${hash}-${event.meeting_id}`
+                };
+            });
+            res.status(200).json(events);
         }
     });
 });
