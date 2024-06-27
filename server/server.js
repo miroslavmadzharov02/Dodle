@@ -129,22 +129,21 @@ function generateTimeSlots(startDate, endDate, startHour, endHour) {
     let currentDate = new Date(startDate);
     let endDateTime = new Date(endDate);
 
-    // Ensure currentDate and endDateTime are at midnight UTC to avoid time zone issues
-    currentDate.setUTCHours(0, 0, 0, 0);
-    endDateTime.setUTCHours(0, 0, 0, 0);
+    currentDate.setHours(0, 0, 0, 0);
+    endDateTime.setHours(0, 0, 0, 0);
 
     while (currentDate <= endDateTime) {
         for (let hour = startHour; hour < endHour; hour++) {
             const slot = new Date(currentDate);
-            slot.setUTCHours(hour, 0, 0, 0);
+            slot.setHours(hour, 0, 0, 0);
 
             const date = slot.toISOString().split('T')[0];
             const time = slot.toTimeString().split(' ')[0];
             timeSlots.push({ date, time });
         }
-        currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+        currentDate.setDate(currentDate.getDate() + 1);
     }
-
+    
     return timeSlots;
 }
 
